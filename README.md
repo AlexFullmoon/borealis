@@ -1,43 +1,67 @@
-# borealis &nbsp; [![bluebuild build badge](https://github.com/alexfullmoon/borealis/actions/workflows/build.yml/badge.svg)](https://github.com/alexfullmoon/borealis/actions/workflows/build.yml)
+# Borealis - custom Aurora-DX image &nbsp; [![bluebuild build badge](https://github.com/alexfullmoon/borealis/actions/workflows/build.yml/badge.svg)](https://github.com/alexfullmoon/borealis/actions/workflows/build.yml)
 
-See the [BlueBuild docs](https://blue-build.org/how-to/setup/) for quick setup instructions for setting up your own repository based on this template.
-
-After setup, it is recommended you update this README to describe your custom image.
+Using `aurora-dx:stable`, customized for personal use and Thinkpad X1Y5 laptop.
 
 ## Installation
 
-> [!WARNING]  
-> [This is an experimental feature](https://www.fedoraproject.org/wiki/Changes/OstreeNativeContainerStable), try at your own discretion.
+From suitable image (preferably freshly-installed aurora-dx):
 
-To rebase an existing atomic Fedora installation to the latest build:
-
-- First rebase to the unsigned image, to get the proper signing keys and policies installed:
-  ```
-  rpm-ostree rebase ostree-unverified-registry:ghcr.io/alexfullmoon/borealis:latest
-  ```
-- Reboot to complete the rebase:
-  ```
-  systemctl reboot
-  ```
-- Then rebase to the signed image, like so:
-  ```
-  rpm-ostree rebase ostree-image-signed:docker://ghcr.io/alexfullmoon/borealis:latest
-  ```
-- Reboot again to complete the installation
-  ```
-  systemctl reboot
-  ```
-
-The `latest` tag will automatically point to the latest build. That build will still always use the Fedora version specified in `recipe.yml`, so you won't get accidentally updated to the next major version.
-
-## ISO
-
-If build on Fedora Atomic, you can generate an offline ISO with the instructions available [here](https://blue-build.org/learn/universal-blue/#fresh-install-from-an-iso). These ISOs cannot unfortunately be distributed on GitHub for free due to large sizes, so for public projects something else has to be used for hosting.
-
-## Verification
-
-These images are signed with [Sigstore](https://www.sigstore.dev/)'s [cosign](https://github.com/sigstore/cosign). You can verify the signature by downloading the `cosign.pub` file from this repo and running the following command:
-
-```bash
-cosign verify --key cosign.pub ghcr.io/alexfullmoon/borealis
 ```
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/alexfullmoon/borealis:stable
+
+systemctl reboot
+
+rpm-ostree rebase ostree-image-signed:docker://ghcr.io/alexfullmoon/borealis:stable
+
+systemctl reboot
+```
+
+## Current changes from Aurora-DX
+
+## TODO
+
+- RPMs
+  - Solaar
+    - Also adds udev rules
+  - Bitwarden
+  - Sublime Text
+  - SourceGit
+  - Firefox
+  - Crossover
+- Flatpaks
+  - LibreOffice
+  - GearLever
+  - Betterbird instead of Thunderbird
+  - Obsidian
+  - Steam
+  - Discord
+  - Zotero
+- Chezmoi dotfiles sync
+- System config
+  - Enabled SMB1 for VM printer
+  - Disabled avahi-daemon listening on ethernet (make it more universal?)
+- Removed
+  - Input Leap
+  - InputRemapper (it conflicts with Solaar)
+  - DejaDup
+
+## TODO
+
+- [ ] Add libfuse for continuing support of AppImage (whenever they drop it from Bluefin)
+- [ ] Seafile, WindTerm, Ghostty
+- [ ] Make chezmoi distinguish between KDE and Gnome
+- [ ] Add KDE settings?
+- [ ] See what's going on with avahi-daemon printer spam 
+ 
+## Current issues (from Bluefin)
+
+Notes after installation from ISO:
+
+- Need to set all flatpaks, adding flatpak module resets all of standard ones.
+- Grub config does not apply.
+- Overall, rebasing from original ublue images works better.
+- Consider moving to UBlue build template.
+
+Ghostty RPM install conflicts with its own terminfo file from ncurses. Awaiting fixes.
+
+Crossover apparently _really_ doesn't like being installed on readonly filesystem, any operation with existing bottles results in hang up. Importing archived bottles work, though. For creating new bottles install a copy into distrobox
